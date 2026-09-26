@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand neutrals + accent — Dezavu Brand Guidelines v1.0 */
+  --color-cream: #f7f5f1;
+  --color-ink: #1a1917;
+  --color-clay: #6b665d;
+  --color-line: #e6e2db;
+  --color-sage: #566349;
+  --color-sage-light: #9db07f;
+
+  /* Neutral surround behind a customer photo — never cream, never sage */
+  --color-surround-dark: #2e2e2e;
+  --color-surround-light: #8c8c8c;
+}
+
+html,
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
