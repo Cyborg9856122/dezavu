@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Logo } from "./Logo";
+import { useThemeClass } from "../data/useAppearance";
 
 interface AppShellProps {
   mode: "dark" | "light";
@@ -14,13 +15,14 @@ interface AppShellProps {
  * header (wordmark + contextual label) that actually belongs to the screen.
  */
 export function AppShell({ mode, headerRight, showHeader = true, children }: AppShellProps) {
-  const bg = mode === "dark" ? "bg-ink" : "bg-white";
+  const bg = mode === "dark" ? "bg-ink scrollbar-dark" : "bg-white";
+  const themeClass = useThemeClass("kiosk");
 
   return (
-    <div className={`flex h-screen w-screen flex-col overflow-hidden ${bg}`}>
+    <div className={`flex h-screen w-screen flex-col overflow-hidden transition-colors ${bg} ${themeClass}`}>
       {showHeader && (
         <div className="flex items-center justify-between px-5 pt-5">
-          <Logo variant={mode === "dark" ? "reversed" : "primary"} className="text-[11px]" />
+          <Logo variant={mode === "dark" ? "reversed" : "primary"} className="text-[15px]" />
           {headerRight && (
             <span
               className={`text-[11px] font-medium ${mode === "dark" ? "text-cream/50" : "text-clay"}`}

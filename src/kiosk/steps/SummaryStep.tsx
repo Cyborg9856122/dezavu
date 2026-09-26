@@ -8,8 +8,20 @@ import type { Consultation, ConsultationPreferences, Customer, FaceAnalysis, Sty
 import type { EngineRecommendation } from "../../ai/recommendationEngine";
 import { useI18n } from "../../i18n/I18nContext";
 
+const MAINTENANCE_BY_STYLING_TIME: Record<ConsultationPreferences["stylingTime"], Customer["preferences"]["maintenancePreference"]> = {
+  very_little: "low",
+  "5_10": "low",
+  "10_20": "medium",
+  "20_plus": "high",
+};
+
+/** Newest first, no duplicates, capped — keeps the profile summary short. */
+const mergeRecent = (fresh: string[], existing: string[], max = 8) => [...new Set([...fresh, ...existing])].slice(0, max);
+
 interface SummaryStepProps {
   customer: Customer;
+  /** The visit already recorded when preferences were chosen (see KioskFlow). */
+  consultationId: string | null;
   preferences: ConsultationPreferences;
   imageDataUrl: string | null;
   capturedWithCamera: boolean;
@@ -20,6 +32,7 @@ interface SummaryStepProps {
 
 export function SummaryStep({
   customer,
+  consultationId,
   preferences,
   imageDataUrl,
   capturedWithCamera,
@@ -73,26 +86,44 @@ export function SummaryStep({
       return rec.id;
     });
 
-    const consultation = consultationRepo.create({
-      id: id(),
-      businessId: BUSINESS_ID,
-      customerId: customer.id,
+    const details = {
       scanId: scan.id,
       preferences,
       recommendationIds: recIds,
       stylistNotes: notes,
       selectedServiceIds,
-      status: "saved",
-      date: new Date().toISOString(),
-      shareToken: null,
-      shareRevoked: false,
-    });
+      status: "saved" as const,
+    };
+    const existing = consultationId ? consultationRepo.update(consultationId, details) : undefined;
+    const consultation =
+      existing ??
+      consultationRepo.create({
+        id: id(),
+        businessId: BUSINESS_ID,
+        customerId: customer.id,
+        date: new Date().toISOString(),
+        shareToken: null,
+        shareRevoked: false,
+        ...details,
+      });
 
     recIds.forEach((recId) => recommendationRepo.update(recId, { consultationId: consultation.id }));
 
+    const chosenStyleNames = recommendations
+      .filter((r) => decisions[r.styleId] === "accepted" || decisions[r.styleId] === "modified")
+      .map((r) => styles.find((s) => s.id === r.styleId)?.name)
+      .filter((name): name is string => Boolean(name));
+    const latest = customerRepo.getById(customer.id) ?? customer;
     customerRepo.update(customer.id, {
       lastVisit: consultation.date,
-      consultationCount: customer.consultationCount + 1,
+      // The visit was already counted when it was recorded at the preferences step.
+      consultationCount: existing ? latest.consultationCount : latest.consultationCount + 1,
+      preferences: {
+        ...latest.preferences,
+        preferredStyles: mergeRecent(chosenStyleNames, latest.preferences.preferredStyles),
+        favoriteServiceIds: mergeRecent(selectedServiceIds, latest.preferences.favoriteServiceIds),
+        maintenancePreference: MAINTENANCE_BY_STYLING_TIME[preferences.stylingTime],
+      },
     });
 
     setSaved(consultation);

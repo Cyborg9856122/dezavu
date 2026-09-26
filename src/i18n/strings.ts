@@ -102,6 +102,19 @@ const en: Dict = {
   "returning.lastVisit": "Your last consultation was",
   "returning.continuePrevious": "Continue Previous Preferences",
   "returning.startNew": "Start New Consultation",
+  "returning.continueSelected": "Continue This Session's Preferences",
+  "returning.sessionHistory": "Session history",
+  "returning.noPrevious": "No previous session on file yet.",
+
+  "session.status.in_progress": "Not finished",
+  "session.status.saved": "Completed",
+  "session.status.shared": "Completed · shared",
+
+  "session.lookingFor": "Looking for",
+  "session.stylePreference": "Style",
+  "session.amountOfChange": "Amount of change",
+  "session.stylingTime": "Styling time",
+  "session.services": "Services",
 
   "error.aiUnavailable": "AI analysis is temporarily unavailable. Your customer information has been saved. Try the analysis again.",
   "error.poorImage": "We couldn't get a clear scan. Please try again with better lighting.",

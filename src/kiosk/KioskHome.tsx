@@ -23,8 +23,8 @@ export function KioskHome({ onNewCustomer, onExistingCustomer }: KioskHomeProps)
       </Link>
 
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Logo variant="reversed" className="text-[13px]" />
-        {business && <p className="mt-2 text-[12px] text-cream/40">{business.name}</p>}
+        <Logo variant="reversed" className="text-[30px]" />
+        {business && <p className="mt-3 text-[14px] text-cream/40">{business.name}</p>}
         <h1 className="mt-8 text-[30px] font-light leading-tight text-cream">{t("home.title")}</h1>
         <p className="mt-2 max-w-xs text-[14px] text-cream/50">{t("app.tagline")}</p>
       </div>
@@ -41,6 +41,7 @@ export function KioskHome({ onNewCustomer, onExistingCustomer }: KioskHomeProps)
           {(Object.keys(LOCALE_LABEL) as Locale[]).map((l) => (
             <button
               key={l}
+              lang={l}
               onClick={() => setLocale(l)}
               className={`text-[12px] ${locale === l ? "text-cream" : "text-cream/35"}`}
             >

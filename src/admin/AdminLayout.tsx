@@ -3,6 +3,7 @@ import { Logo } from "../components/Logo";
 import { useSession } from "../session/SessionContext";
 import { useRepositoryAll } from "../data/useRepository";
 import { staffRepo, businessRepo } from "../data/repositories";
+import { useThemeClass } from "../data/useAppearance";
 
 const NAV = [
   { to: "/admin", label: "Dashboard", end: true },
@@ -19,11 +20,12 @@ export function AdminLayout() {
   const allStaff = useRepositoryAll(staffRepo);
   const businesses = useRepositoryAll(businessRepo);
   const business = businesses[0];
+  const themeClass = useThemeClass("admin");
 
   return (
-    <div className="flex h-screen w-screen bg-cream text-ink">
+    <div className={`flex h-screen w-screen bg-cream text-ink ${themeClass}`}>
       <aside className="flex w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-6">
-        <Logo variant="primary" className="px-2 text-[11px]" />
+        <Logo variant="primary" className="px-2 text-[16px]" />
         <p className="mt-1 px-2 text-[12px] text-clay">{business?.name}</p>
 
         <nav className="mt-8 flex flex-1 flex-col gap-1">

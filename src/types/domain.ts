@@ -6,6 +6,8 @@
 
 export type StaffRole = "owner" | "manager" | "stylist" | "receptionist";
 
+export type ThemeMode = "light" | "dark";
+
 export interface Business {
   id: string;
   name: string;
@@ -19,6 +21,11 @@ export interface Business {
   };
   privacy: {
     dataRetentionDays: number;
+  };
+  /** Optional so businesses saved before this setting existed still load; see useAppearance. */
+  appearance?: {
+    kioskTheme: ThemeMode;
+    adminTheme: ThemeMode;
   };
   subscription: {
     plan: "starter" | "professional" | "business" | "enterprise";

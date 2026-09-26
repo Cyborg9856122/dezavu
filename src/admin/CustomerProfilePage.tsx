@@ -13,11 +13,12 @@ import { Card } from "../components/Card";
 import { MatchBadge } from "../components/Badge";
 import { FaceAvatar } from "../components/FaceAvatar";
 import { styleToAvatarProps } from "../ai/generatePreview";
-import { formatDate, timeAgo } from "../lib/format";
+import { formatDate, formatDateTime, timeAgo } from "../lib/format";
 import { EmptyState } from "../components/EmptyState";
+import { describePreferences } from "../config/activeBusinessType";
 import type { Consultation, Recommendation, Style } from "../types/domain";
 
-const TABS = ["Overview", "Scans", "Recommendations", "Looks", "Compare", "Notes"] as const;
+const TABS = ["Overview", "Visits", "Scans", "Recommendations", "Looks", "Compare", "Notes"] as const;
 type Tab = (typeof TABS)[number];
 
 export function CustomerProfilePage() {
@@ -105,6 +106,10 @@ export function CustomerProfilePage() {
                   <dt className="text-clay">Preferred styles</dt>
                   <dd className="text-ink">{customer.preferences.preferredStyles.join(", ") || "—"}</dd>
                 </div>
+                <div className="flex justify-between">
+                  <dt className="text-clay">Favorite services</dt>
+                  <dd className="text-ink">{serviceNames(customer.preferences.favoriteServiceIds) || "—"}</dd>
+                </div>
               </dl>
             </Card>
             <Card>
@@ -119,6 +124,57 @@ export function CustomerProfilePage() {
               <p className="text-[13px] font-medium text-ink">Staff notes</p>
               <p className="mt-2 whitespace-pre-wrap text-[13px] text-clay">{customer.notes || "No notes yet."}</p>
             </Card>
+          </div>
+        )}
+
+        {tab === "Visits" && (
+          <div className="space-y-3">
+            {myConsultations.length === 0 && <EmptyState title="No visits yet" />}
+            {myConsultations.map((c) => {
+              const chosen = recsFor(c.id)
+                .filter((r) => r.stylistDecision === "accepted" || r.stylistDecision === "modified")
+                .map((r) => styleById(r.styleId)?.name)
+                .filter(Boolean)
+                .join(", ");
+              const prefs = describePreferences(c.preferences);
+              return (
+                <Card key={c.id}>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[14px] font-medium text-ink">{formatDateTime(c.date)}</p>
+                    <span className="text-[12px] text-clay">
+                      {c.status === "in_progress" ? "Not finished" : c.status === "shared" ? "Saved · shared" : "Saved"}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-[13px]">
+                    <div>
+                      <dt className="text-clay">Looking for</dt>
+                      <dd className="text-ink">{prefs.lookingFor}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-clay">Style preference</dt>
+                      <dd className="text-ink">{prefs.stylePreference}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-clay">Amount of change</dt>
+                      <dd className="text-ink">{prefs.amountOfChange}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-clay">Styling time</dt>
+                      <dd className="text-ink">{prefs.stylingTime}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-clay">Chosen styles</dt>
+                      <dd className="text-ink">{chosen || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-clay">Services</dt>
+                      <dd className="text-ink">{serviceNames(c.selectedServiceIds) || "—"}</dd>
+                    </div>
+                  </dl>
+                  {c.stylistNotes && <p className="mt-3 text-[12px] text-clay">Note: {c.stylistNotes}</p>}
+                </Card>
+              );
+            })}
           </div>
         )}
 

@@ -14,6 +14,81 @@
   /* Neutral surround behind a customer photo — never cream, never sage */
   --color-surround-dark: #2e2e2e;
   --color-surround-light: #8c8c8c;
+
+  --animate-fade-in: fade-in 220ms ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/*
+ * Script fonts. unicode-range limits them to Arabic-script characters, so
+ * Latin text (the wordmark, names, numbers) stays in IBM Plex Sans in every
+ * locale. Uses the font if installed on the device, else /public/fonts.
+ */
+@font-face {
+  font-family: "Rabar 13";
+  src: local("Rabar_013"), local("Rabar 013"), local("Rabar_13"), url("/fonts/Rabar_013.ttf") format("truetype");
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+
+/* Only the Bold cut is bundled, so it serves every weight (no faux-bolding). */
+@font-face {
+  font-family: "Bahij Sans Arabic";
+  src: local("Bahij TheSansArabic Bold"), local("Bahij_TheSansArabic-Bold"), url("/fonts/Bahij_TheSansArabic-Bold.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+
+/* Applies to the whole app in that locale, and to any element tagged lang="ku"/"ar" (e.g. the language switcher). */
+:lang(ku) {
+  font-family: "Rabar 13", var(--font-sans);
+}
+
+:lang(ar) {
+  font-family: "Bahij Sans Arabic", var(--font-sans);
+}
+
+/*
+ * Light/dark mode (Settings → Appearance). The kiosk is designed dark and
+ * the admin light; the opposite mode inverts the brand tokens on that
+ * surface's root. Sage and Sage Light swap too, which keeps the guide's rule
+ * (2.5): Sage Light on dark screens, Sage on light ones. The photo surround
+ * colours are deliberately left alone.
+ */
+.theme-inverted {
+  --color-cream: #1a1917;
+  --color-ink: #f7f5f1;
+  --color-white: #242320;
+  --color-line: #3a3833;
+  --color-clay: #a8a397;
+  --color-sage: #9db07f;
+  --color-sage-light: #566349;
+}
+
+.theme-dark {
+  color-scheme: dark;
+}
+
+.theme-light {
+  color-scheme: light;
+}
+
+/* Thin, low-contrast scrollbars for the kiosk screens (default ones are bright white). */
+.scrollbar-dark,
+.scrollbar-dark * {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-cream) 16%, transparent) transparent;
 }
 
 html,
